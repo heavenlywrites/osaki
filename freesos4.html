@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>freesos4</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+
+:root{
+  --og:#ff5500;
+  --og2:#ff7700;
+  --bg:#111;
+  --bg2:#1a1a1a;
+  --line:#2a2a2a;
+  --muted:#555;
+  --text:#e8e8e8;
+}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Space Grotesk',sans-serif;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+
+header{
+  padding:1.4rem 2rem;
+  border-bottom:1px solid var(--line);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.logo{font-size:1rem;font-weight:700;letter-spacing:0.1em;color:var(--text);}
+.logo span{color:var(--og);}
+
+.status{
+  display:flex;align-items:center;gap:0.5rem;
+  font-size:0.7rem;color:var(--muted);
+  letter-spacing:0.1em;text-transform:uppercase;
+}
+
+.dot{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--og);animation:pulse 2s infinite;
+}
+
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+
+.hero{
+  padding:4rem 2rem 3rem;
+  border-bottom:1px solid var(--line);
+}
+
+.tag{
+  font-size:0.65rem;letter-spacing:0.2em;
+  text-transform:uppercase;color:var(--og);margin-bottom:1.2rem;
+}
+
+h1{
+  font-size:clamp(2.8rem,8vw,5.5rem);
+  font-weight:700;line-height:0.95;
+  letter-spacing:-0.03em;margin-bottom:1.5rem;
+}
+
+h1 em{
+  font-style:normal;color:transparent;
+  -webkit-text-stroke:1px var(--og);
+}
+
+.bio{font-size:0.8rem;color:var(--muted);max-width:380px;line-height:1.7;font-weight:300;}
+
+.waveform{
+  padding:2rem;border-bottom:1px solid var(--line);
+  display:flex;align-items:center;gap:1.5rem;
+}
+
+.play-btn{
+  width:44px;height:44px;border-radius:50%;
+  background:var(--og);border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;transition:transform 0.15s,background 0.15s;
+}
+
+.play-btn:hover{background:var(--og2);transform:scale(1.06);}
+.play-btn svg{width:14px;height:14px;fill:white;margin-left:2px;}
+
+.wave-wrap{flex:1;position:relative;height:40px;cursor:pointer;}
+.wave-bars{display:flex;align-items:center;gap:2px;height:100%;}
+
+.bar{
+  flex:1;background:var(--line);border-radius:1px;
+  transition:background 0.1s;min-height:3px;
+}
+
+.bar.played{background:var(--og);}
+.bar.playing{background:var(--og2);}
+
+.track-info{font-size:0.7rem;color:var(--muted);white-space:nowrap;}
+.track-title{font-size:0.8rem;color:var(--text);font-weight:500;margin-bottom:0.2rem;}
+
+.tracks{border-bottom:1px solid var(--line);}
+
+.track-row{
+  display:flex;align-items:center;gap:1rem;
+  padding:1rem 2rem;border-bottom:1px solid var(--line);
+  transition:background 0.15s;cursor:pointer;
+}
+
+.track-row:last-child{border-bottom:none;}
+.track-row:hover{background:var(--bg2);}
+
+.track-num{font-size:0.65rem;color:var(--muted);width:1.5rem;text-align:center;font-weight:300;}
+
+.track-bar-mini{width:50px;height:20px;display:flex;align-items:center;gap:1px;flex-shrink:0;}
+.mini-bar{flex:1;background:var(--line);border-radius:1px;min-height:2px;}
+.track-row:hover .mini-bar{background:var(--muted);}
+.track-row.active .mini-bar{background:var(--og);}
+
+.track-name{flex:1;font-size:0.82rem;font-weight:400;}
+.track-row.active .track-name{color:var(--og);}
+
+.track-dur,.track-plays{font-size:0.65rem;color:var(--muted);font-weight:300;}
+.track-plays{min-width:60px;text-align:right;}
+
+.links{display:grid;grid-template-columns:1fr 1fr;}
+
+.link-item{
+  padding:1.5rem 2rem;border-right:1px solid var(--line);
+  border-bottom:1px solid var(--line);text-decoration:none;
+  display:flex;align-items:center;justify-content:space-between;
+  transition:background 0.15s;color:var(--muted);
+  font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;
+}
+
+.link-item:nth-child(even){border-right:none;}
+.link-item:nth-last-child(-n+2){border-bottom:none;}
+.link-item:hover{background:var(--bg2);color:var(--text);}
+.link-item:hover .arr{color:var(--og);}
+.arr{font-size:0.9rem;transition:transform 0.15s;}
+.link-item:hover .arr{transform:translate(2px,-2px);}
+
+footer{
+  margin-top:auto;padding:1.2rem 2rem;
+  border-top:1px solid var(--line);
+  display:flex;justify-content:space-between;align-items:center;
+}
+
+.footer-left{font-size:0.65rem;color:var(--muted);letter-spacing:0.05em;}
+.footer-left span{color:var(--og);}
+.sc-badge{
+  font-size:0.6rem;color:var(--muted);letter-spacing:0.1em;
+  text-transform:uppercase;border:1px solid var(--line);
+  padding:0.3rem 0.7rem;border-radius:2px;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">freesos4<span>.</span></div>
+  <div class="status"><div class="dot"></div>open to collabs</div>
+</header>
+
+<div class="hero">
+  <p class="tag">Singer · Songwriter · Producer</p>
+  <h1>AUTHENTICITY<br><em>LIVES HERE.</em></h1>
+  <p class="bio">making music since 2018.</p>
+</div>
+
+<div class="waveform">
+  <button class="play-btn" id="playBtn" onclick="togglePlay()">
+    <svg id="playIcon" viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
+  </button>
+  <div style="flex:1">
+    <div class="track-title">FOREVER SOS4</div>
+    <div style="display:flex;align-items:center;gap:1rem;margin-top:0.4rem">
+      <div class="wave-wrap" onclick="scrubWave(event,this)">
+        <div class="wave-bars" id="waveBars"></div>
+      </div>
+      <div class="track-info" id="timeDisplay">0:00</div>
+    </div>
+  </div>
+</div>
+
+<div class="tracks">
+  <div class="track-row active">
+    <div class="track-num">1</div>
+    <div class="track-bar-mini"></div>
+    <div class="track-name">FOREVER SOS4</div>
+    <div class="track-plays">84.2k plays</div>
+    <div class="track-dur">3:14</div>
+  </div>
+  <div class="track-row">
+    <div class="track-num">2</div>
+    <div class="track-bar-mini"></div>
+    <div class="track-name">HOLLOW</div>
+    <div class="track-plays">51.7k plays</div>
+    <div class="track-dur">2:48</div>
+  </div>
+  <div class="track-row">
+    <div class="track-num">3</div>
+    <div class="track-bar-mini"></div>
+    <div class="track-name">STATIC (prod. freesos4)</div>
+    <div class="track-plays">39.1k plays</div>
+    <div class="track-dur">3:02</div>
+  </div>
+  <div class="track-row">
+    <div class="track-num">4</div>
+    <div class="track-bar-mini"></div>
+    <div class="track-name">CHROME TEETH</div>
+    <div class="track-plays">22.4k plays</div>
+    <div class="track-dur">2:33</div>
+  </div>
+</div>
+
+<div class="links">
+  <a href="https://soundcloud.com/freesos4" class="link-item" target="_blank">SoundCloud <span class="arr">↗</span></a>
+  <a href="https://instagram.com/freesos4" class="link-item" target="_blank">Instagram <span class="arr">↗</span></a>
+  <a href="https://spotify.com/@freesos4" class="link-item" target="_blank">Spotify <span class="arr">↗</span></a>
+  <a href="https://tiktok.com/freesos4" class="link-item" target="_blank">TikTok <span class="arr">↗</span></a>
+</div>
+
+<footer>
+  <div class="footer-left">© 2026 <span>freesos4</span></div>
+</footer>
+
+<script>
+const bars=80;
+const waveBars=document.getElementById('waveBars');
+const heights=Array.from({length:bars},()=>Math.random()*0.7+0.15);
+heights.forEach(h=>{
+  const b=document.createElement('div');
+  b.className='bar';
+  b.style.height=(h*100)+'%';
+  waveBars.appendChild(b);
+});
+
+document.querySelectorAll('.track-bar-mini').forEach(wrap=>{
+  for(let i=0;i<12;i++){
+    const b=document.createElement('div');
+    b.className='mini-bar';
+    b.style.height=(Math.random()*70+20)+'%';
+    wrap.appendChild(b);
+  }
+});
+
+let playing=false,progress=0,interval=null;
+
+function togglePlay(){
+  playing=!playing;
+  document.getElementById('playIcon').innerHTML=playing
+    ?'<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>'
+    :'<polygon points="5,3 19,12 5,21"/>';
+  if(playing){
+    interval=setInterval(()=>{
+      progress=Math.min(progress+1/(bars*12),1);
+      updateWave();
+      if(progress>=1){clearInterval(interval);playing=false;
+        document.getElementById('playIcon').innerHTML='<polygon points="5,3 19,12 5,21"/>';}
+    },80);
+  }else{clearInterval(interval);}
+}
+
+function updateWave(){
+  const filled=Math.floor(progress*bars);
+  document.querySelectorAll('#waveBars .bar').forEach((b,i)=>{
+    b.className='bar'+(i<filled?' played':i===filled?' playing':'');
+  });
+  const total=194,sec=Math.floor(progress*total);
+  document.getElementById('timeDisplay').textContent=`${Math.floor(sec/60)}:${String(sec%60).padStart(2,'0')}`;
+}
+
+function scrubWave(e,wrap){
+  const rect=wrap.getBoundingClientRect();
+  progress=Math.max(0,Math.min(1,(e.clientX-rect.left)/rect.width));
+  updateWave();
+}
+</script>
+</body>
+</html>
