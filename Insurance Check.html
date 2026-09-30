@@ -1,0 +1,319 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Insurance Check</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:ital,wght@0,500;0,600;0,700;0,800;1,500&display=swap">
+<style>
+/* Layout: heart-topped header, search + filter chips, card grid; click a card to open its detail sheet */
+:root{
+  --bg:#fff6f8; --surface:#ffffff; --tint:#ffe8ef; --fg:#3a2230; --muted:#735161; --line:#f0c2d1;
+  --accent:#b0245a; --accent-ink:#ffffff; --plum:#7b3f9e; --heart:#f7b9cc;
+  --ok:#1f7a4d; --ok-bg:#e3f4ea; --warn:#9a5b00; --warn-bg:#fff1d6; --no:#b3261e; --no-bg:#fde4e2; --unk:#5f5a66; --unk-bg:#eeebf1;
+  --display:'Fredoka',Nunito,system-ui,sans-serif; --body:'Nunito',system-ui,sans-serif;
+  --shadow:0 1px 2px rgba(122,40,76,.08),0 6px 18px rgba(122,40,76,.07);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#1e1318; --surface:#2a1b22; --tint:#351f2a; --fg:#f8e8ee; --muted:#cfb0bd; --line:#553041;
+  --accent:#ff86b0; --accent-ink:#2a0c19; --plum:#cfa0ec; --heart:#6b3048;
+  --ok:#7ddba8; --ok-bg:#173327; --warn:#f3c56b; --warn-bg:#3a2c12; --no:#ff9d95; --no-bg:#3d1a19; --unk:#c9c2d2; --unk-bg:#2f2a36;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 18px rgba(0,0,0,.25); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#1e1318; --surface:#2a1b22; --tint:#351f2a; --fg:#f8e8ee; --muted:#cfb0bd; --line:#553041;
+  --accent:#ff86b0; --accent-ink:#2a0c19; --plum:#cfa0ec; --heart:#6b3048;
+  --ok:#7ddba8; --ok-bg:#173327; --warn:#f3c56b; --warn-bg:#3a2c12; --no:#ff9d95; --no-bg:#3d1a19; --unk:#c9c2d2; --unk-bg:#2f2a36;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 18px rgba(0,0,0,.25); color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.45}
+.wrap{max-width:1100px;margin:0 auto;padding:28px 20px 60px;display:flex;flex-direction:column;gap:18px}
+.heart{display:inline-block;flex-shrink:0}
+header{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px}
+header::before{content:""}
+.brand{display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center;min-width:0}
+.title-row{display:flex;align-items:center;justify-content:center;gap:10px}
+header #addBtn{justify-self:end}
+@media (max-width:620px){header{grid-template-columns:minmax(0,1fr)}header::before{display:none}header #addBtn{justify-self:center}}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(26px,5vw,34px);margin:0;color:var(--accent);text-wrap:balance}
+.sub{font-family:var(--display);font-weight:500;color:var(--muted);font-size:14px;letter-spacing:.4px}
+button{font:inherit;cursor:pointer}
+.btn{border:0;border-radius:99px;padding:10px 18px;font-weight:800;background:var(--accent);color:var(--accent-ink);display:inline-flex;align-items:center;gap:6px;min-height:44px}
+.btn.ghost{background:transparent;color:var(--accent);border:2px solid var(--accent)}
+.btn.danger{background:var(--no);color:var(--surface)}
+.btn:focus-visible,.chip:focus-visible,.card:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--plum);outline-offset:2px}
+.tip{background:var(--tint);border-radius:16px;padding:10px 16px;display:flex;gap:10px;align-items:flex-start;color:var(--fg);font-size:14px}
+.tools{display:flex;flex-direction:column;gap:10px}
+.search{position:relative}
+.search input{width:100%;border:2px solid var(--line);background:var(--surface);color:var(--fg);border-radius:99px;padding:12px 18px 12px 44px;font:inherit;font-size:16px}
+.search svg{position:absolute;left:16px;top:50%;transform:translateY(-50%)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1.5px solid var(--line);background:var(--surface);color:var(--fg);border-radius:99px;padding:6px 14px;font-weight:700;font-size:14px;min-height:36px}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.count{color:var(--muted);font-size:14px;font-weight:600}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.card{background:var(--surface);border:1.5px solid var(--line);border-radius:18px;padding:14px 16px;text-align:left;color:var(--fg);display:flex;flex-direction:column;gap:8px;box-shadow:var(--shadow);transition:transform .12s ease,border-color .12s ease;min-width:0}
+.card:hover{transform:translateY(-2px);border-color:var(--accent)}
+.card .name{font-family:var(--display);font-weight:600;font-size:18px;line-height:1.2;overflow-wrap:anywhere}
+.card .type{color:var(--muted);font-size:13px;font-weight:700}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{display:inline-flex;align-items:center;gap:5px;border-radius:99px;padding:2px 10px;font-size:12.5px;font-weight:800}
+.pill .dot{width:7px;height:7px;border-radius:50%;background:currentColor}
+.s-accepted{background:var(--ok-bg);color:var(--ok)} .s-check{background:var(--warn-bg);color:var(--warn)}
+.s-not{background:var(--no-bg);color:var(--no)} .s-unknown{background:var(--unk-bg);color:var(--unk)}
+.ref{background:var(--tint);color:var(--plum)}
+.medicaid{background:var(--ok-bg);color:var(--ok);border:2px solid var(--ok);border-radius:14px;padding:10px 14px;font-weight:800;display:flex;gap:10px;align-items:center}
+.pill.concern{background:var(--warn-bg);color:var(--warn)}
+.concern-box{background:var(--warn-bg);color:var(--warn);border:2px solid var(--warn);border-radius:14px;padding:10px 14px;font-weight:800;display:flex;gap:10px;align-items:center}
+label.check{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--fg);cursor:pointer}
+label.check input{width:22px;height:22px;min-height:0;accent-color:var(--accent)}
+.fact .v{line-height:1.4}
+.pill.mcd{background:var(--ok-bg);color:var(--ok)}
+.empty{background:var(--surface);border:2px dashed var(--line);border-radius:18px;padding:30px 20px;text-align:center;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:10px}
+.status-line{color:var(--muted);font-size:13px;min-height:18px}
+/* sheet */
+.overlay{position:fixed;inset:0;background:rgba(40,10,24,.45);display:flex;justify-content:center;align-items:flex-start;padding:max(24px,env(safe-area-inset-top,0px)) 16px 24px;overflow-y:auto;z-index:10}
+.sheet{background:var(--surface);color:var(--fg);border-radius:22px;width:100%;max-width:620px;padding:22px;display:flex;flex-direction:column;gap:16px;box-shadow:0 20px 50px rgba(0,0,0,.25);position:relative}
+.sheet h2{font-family:var(--display);font-size:26px;margin:0;color:var(--accent);line-height:1.15;overflow-wrap:anywhere;padding-right:44px}
+.close{position:absolute;right:14px;top:14px;border:0;background:var(--tint);color:var(--accent);width:40px;height:40px;border-radius:50%;font-size:22px;line-height:1;display:grid;place-items:center}
+.facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.fact{background:var(--bg);border-radius:14px;padding:10px 12px;min-width:0}
+.fact .k{font-size:11.5px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:var(--muted)}
+.fact .v{font-weight:700;font-size:16px;overflow-wrap:anywhere;white-space:pre-wrap;font-variant-numeric:tabular-nums}
+.fact.wide{grid-column:span 2}
+.fact .v.blank{color:var(--muted);font-weight:600;font-style:italic}
+.meta{color:var(--muted);font-size:13px}
+.actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:flex-end}
+form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.field{display:flex;flex-direction:column;gap:4px;min-width:0}
+.field.wide{grid-column:span 2}
+label{font-size:12.5px;font-weight:800;color:var(--muted);letter-spacing:.4px}
+input,select,textarea{font:inherit;color:var(--fg);background:var(--bg);border:1.5px solid var(--line);border-radius:12px;padding:9px 12px;min-height:44px;width:100%}
+textarea{min-height:80px;resize:vertical}
+.confirm{background:var(--no-bg);color:var(--no);border-radius:14px;padding:12px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;font-weight:700}
+.err{color:var(--no);font-weight:700;font-size:14px}
+@media (max-width:520px){.facts,form{grid-template-columns:minmax(0,1fr)}.fact.wide,.field.wide{grid-column:auto}}
+@media (prefers-reduced-motion:reduce){.card{transition:none}.card:hover{transform:none}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <div class="title-row">
+        <svg class="heart" width="34" height="34" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.8-9C.4 8.3 2.8 4 6.8 4c2.2 0 3.7 1.2 5.2 3 1.5-1.8 3-3 5.2-3 4 0 6.4 4.3 4.6 8-2.3 4.4-9.8 9-9.8 9z" fill="var(--accent)"/></svg>
+        <h1>Insurance Check</h1>
+      </div>
+      <div class="sub">Bucks Mont Eye Associates · FRONT DESK GIRLS</div>
+    </div>
+    <button class="btn" id="addBtn" type="button">+ Add insurance</button>
+  </header>
+
+  <div class="tip">
+    <svg class="heart" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" style="margin-top:2px"><path d="M12 21s-7.5-4.6-9.8-9C.4 8.3 2.8 4 6.8 4c2.2 0 3.7 1.2 5.2 3 1.5-1.8 3-3 5.2-3 4 0 6.4 4.3 4.6 8-2.3 4.4-9.8 9-9.8 9z" fill="var(--accent)"/></svg>
+    <div>Insurance is hard! Use this as a guide and always verify eligibility.</div>
+  </div>
+
+  <div class="tools">
+    <div class="search">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input id="q" type="search" placeholder="Search insurance or doctor name…" aria-label="Search insurances or doctors" autocomplete="off">
+    </div>
+    <div class="chips" id="typeChips" role="group" aria-label="Filter by plan type"></div>
+  </div>
+
+  <div class="count" id="count"></div>
+  <div class="grid" id="grid"></div>
+  <div class="empty" id="empty" hidden></div>
+  <div class="status-line" id="statusLine">Loading the insurance list…</div>
+</div>
+
+<div class="overlay" id="overlay" hidden>
+  <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle"></div>
+</div>
+
+<script>
+(() => {
+const HEART = 'M12 21s-7.5-4.6-9.8-9C.4 8.3 2.8 4 6.8 4c2.2 0 3.7 1.2 5.2 3 1.5-1.8 3-3 5.2-3 4 0 6.4 4.3 4.6 8-2.3 4.4-9.8 9-9.8 9z';
+const STATUS = {accepted:'We take it', check:'Depends on plan', not:'We don’t take it', unknown:'Needs checking'};
+const REFERRAL = {yes:'Referral needed', no:'No referral', depends:'Referral: check the card', unknown:'Referral: not listed'};
+const TYPES = ['Commercial','Medicare Advantage','Medicaid','Non-traditional','Workers comp','Other'];
+const FIELDS = [
+  ['refraction','Refraction fee?','Yes / No'],
+  ['copay','Specialist copay','e.g. $40'],
+  ['deductible','Deductible','e.g. $500 / applies to medical'],
+  ['coinsurance','Coinsurance','e.g. 20% after deductible'],
+  ['auth','Prior auth','e.g. Needed for surgery'],
+];
+let items = [], db = null, col = null;
+let fStatus = 'all', fType = 'all', query = '';
+const $ = id => document.getElementById(id);
+
+function el(tag, attrs = {}, kids = []) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k === 'class') e.className = v; else if (k === 'text') e.textContent = v;
+    else if (k.startsWith('on')) e.addEventListener(k.slice(2), v); else e.setAttribute(k, v);
+  }
+  for (const c of [].concat(kids)) if (c) e.append(c);
+  return e;
+}
+function heart(size, fill) {
+  const ns = 'http://www.w3.org/2000/svg';
+  const s = document.createElementNS(ns, 'svg'); s.setAttribute('width', size); s.setAttribute('height', size);
+  s.setAttribute('viewBox', '0 0 24 24'); s.setAttribute('aria-hidden', 'true'); s.classList.add('heart');
+  const p = document.createElementNS(ns, 'path'); p.setAttribute('d', HEART); p.setAttribute('fill', fill); s.append(p); return s;
+}
+const str = v => (typeof v === 'string' ? v : '');
+const statusOf = d => STATUS[d.status] ? d.status : 'unknown';
+function isMedicaid(d){ return str(d.type)==='Medicaid'; }
+function statusPill(d){ const s = statusOf(d); return el('span',{class:'pill s-'+s},[el('span',{class:'dot'}), STATUS[s]]); }
+function isConcern(d){ return d.concern==='yes'; }
+function refPillMaybe(d){ return (REFERRAL[d.referral] && d.referral!=='unknown') ? refPill(d) : null; }
+function refPill(d){ const r = REFERRAL[d.referral] ? d.referral : 'unknown'; return el('span',{class:'pill ref'},[REFERRAL[r]]); }
+
+function renderChips() {
+  const tc = $('typeChips'); tc.replaceChildren();
+  [['all','All plan types'],...TYPES.map(t=>[t,t])].forEach(([k,label]) => tc.append(
+    el('button',{class:'chip',type:'button','aria-pressed':String(fType===k),onclick:()=>{fType=k;renderChips();render();}},[label])));
+}
+
+function render() {
+  const q = query.trim().toLowerCase();
+  const list = items.filter(d =>
+    (fType==='all' || str(d.type)===fType) &&
+    (!q || str(d.name).toLowerCase().includes(q) || str(d.notes).toLowerCase().includes(q) || str(d.doctors).toLowerCase().includes(q) || str(d.doctorsOON).toLowerCase().includes(q) || str(d.rules).toLowerCase().includes(q)))
+    .sort((a,b)=>str(a.name).localeCompare(str(b.name)));
+  const grid = $('grid'); grid.replaceChildren();
+  list.forEach(d => grid.append(el('button',{class:'card',type:'button',onclick:()=>openDetail(d.id)},[
+    el('div',{class:'name',text:str(d.name)||'Unnamed insurance'}),
+    el('div',{class:'type',text:str(d.type)||'Plan type not set'}),
+    el('div',{class:'pills'},[isConcern(d)?el('span',{class:'pill concern',text:'Extra attention'}):null, isMedicaid(d)?el('span',{class:'pill mcd',text:'$0 out of pocket'}):null, refPillMaybe(d)])
+  ])));
+  $('count').textContent = items.length ? `Showing ${list.length} of ${items.length} insurances` : '';
+  const empty = $('empty');
+  if (!items.length && db) {
+    empty.hidden = false;
+    empty.replaceChildren(heart(32,'var(--heart)'), el('div',{text:'No insurances yet. Add the first one to start the list.'}),
+      el('button',{class:'btn',type:'button',onclick:()=>openEdit(null)},['+ Add insurance']));
+  } else if (items.length && !list.length) {
+    empty.hidden = false;
+    empty.replaceChildren(heart(28,'var(--heart)'), el('div',{text:'No insurance matches that search. Check the spelling, or add it if it’s new.'}));
+  } else empty.hidden = true;
+}
+
+function appendAll(p,...kids){ kids.forEach(c=>{ if(c) p.append(c); }); }
+function openSheet(){ $('overlay').hidden = false; document.body.style.overflow='hidden'; }
+function closeSheet(){ $('overlay').hidden = true; document.body.style.overflow=''; }
+$('overlay').addEventListener('click', e => { if (e.target.id === 'overlay') closeSheet(); });
+$('overlay').addEventListener('keydown', e => { if (e.key === 'Escape') closeSheet(); });
+
+function fmtDate(v){ if(!v) return ''; const d=new Date(v); return isNaN(d)?'':d.toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'}); }
+
+function openDetail(id) {
+  const d = items.find(x=>x.id===id); if (!d) return;
+  const sheet = $('sheet'); sheet.replaceChildren();
+  const fact = (k, v, wide) => el('div',{class:'fact'+(wide?' wide':'')},[
+    el('div',{class:'k',text:k}), el('div',{class:'v'+(v?'':' blank'),text:v||'Not added yet'})]);
+  appendAll(sheet,
+    el('button',{class:'close',type:'button','aria-label':'Close',onclick:closeSheet},['×']),
+    el('h2',{id:'sheetTitle',text:str(d.name)||'Unnamed insurance'}),
+    el('div',{class:'pills'},[refPillMaybe(d), str(d.type)?el('span',{class:'pill s-unknown',text:d.type}):null]),
+    isConcern(d) ? el('div',{class:'concern-box',role:'note'},[heart(20,'currentColor'), el('span',{text:'Biggest concern: pay extra attention. If anything is confusing, transfer the call to the clinic.'})]) : null,
+    isMedicaid(d) ? el('div',{class:'medicaid',role:'note'},[heart(20,'currentColor'), el('span',{text:'This is Medicaid. Do not charge the patient anything out of pocket (no copay, no deductible, no coinsurance). The only exception is contact lens appointments.'})]) : null,
+    el('div',{class:'facts'},[
+      fact('Doctors in network',str(d.doctors)),
+      fact('Doctors out of network',str(d.doctorsOON)),
+      fact('Rules / caveats',str(d.rules),true),
+      ...FIELDS.filter(([k])=>k==='refraction'||str(d[k])).map(([k,label])=>fact(label,str(d[k]))),
+      fact('Notes',str(d.notes),true)
+    ]),
+    el('div',{class:'meta',text: d.updatedAt ? 'Last updated '+fmtDate(d.updatedAt) : ''}),
+    el('div',{class:'actions'},[
+      el('button',{class:'btn ghost',type:'button',onclick:closeSheet},['Close']),
+      el('button',{class:'btn',type:'button',onclick:()=>openEdit(id)},['Edit'])
+    ])
+  );
+  openSheet(); sheet.querySelector('.close').focus();
+}
+
+function openEdit(id) {
+  if (!col) return;
+  const d = id ? items.find(x=>x.id===id) || {} : {};
+  const sheet = $('sheet'); sheet.replaceChildren();
+  const inp = (name,label,ph,wide) => el('div',{class:'field'+(wide?' wide':'')},[
+    el('label',{for:'f-'+name,text:label}), el('input',{id:'f-'+name,name,placeholder:ph||'',value:str(d[name])})]);
+  const sel = (name,label,opts,cur) => { const s = el('select',{id:'f-'+name,name});
+    opts.forEach(([v,t])=>{ const o=el('option',{value:v,text:t}); if(v===cur) o.selected=true; s.append(o); });
+    return el('div',{class:'field'},[el('label',{for:'f-'+name,text:label}), s]); };
+  const err = el('div',{class:'err',role:'alert'});
+  const form = el('form',{},[
+    inp('name','Insurance name','e.g. Aetna PPO',true),
+    inp('doctors','Doctors in network','e.g. ALL, or ALL but SDT'),
+    inp('doctorsOON','Doctors out of network','e.g. None, or Dr. Tubiello'),
+    el('div',{class:'field wide'},[el('label',{for:'f-rules',text:'Rules / caveats'}), (()=>{const t=el('textarea',{id:'f-rules',name:'rules',placeholder:'e.g. Needs referral. Must be validated at booking.'}); t.value=str(d.rules); return t;})()]),
+    sel('type','Plan type',[['','Choose…'],...TYPES.map(t=>[t,t])],str(d.type)),
+    sel('referral','Referral',Object.entries(REFERRAL).map(([k,v])=>[k,v.replace('Referral: ','').replace(/^./,c=>c.toUpperCase())]),REFERRAL[d.referral]?d.referral:'unknown'),
+    ...FIELDS.map(([k,label,ph])=>inp(k,label,ph)),
+    el('div',{class:'field wide'},[el('label',{class:'check',for:'f-concern'},[(()=>{const c=el('input',{id:'f-concern',type:'checkbox',name:'concern',value:'yes'}); c.checked=isConcern(d); return c;})(), 'Biggest concern (pay extra attention)'])]),
+    el('div',{class:'field wide'},[el('label',{for:'f-notes',text:'Notes'}), (()=>{const t=el('textarea',{id:'f-notes',name:'notes',placeholder:'Notes or questions that may come up'}); t.value=str(d.notes); return t;})()]),
+  ]);
+  const saveBtn = el('button',{class:'btn',type:'submit'},['Save']);
+  const actions = el('div',{class:'actions'});
+  if (id) actions.append(el('button',{class:'btn ghost',type:'button',style:'margin-right:auto',onclick:()=>askDelete()},['Delete']));
+  actions.append(el('button',{class:'btn ghost',type:'button',onclick:()=> id?openDetail(id):closeSheet()},['Cancel']), saveBtn);
+  const confirmBox = el('div',{class:'confirm',hidden:''});
+  function askDelete(){
+    confirmBox.hidden = false;
+    confirmBox.replaceChildren(el('span',{text:'Delete this insurance for everyone?'}),
+      el('span',{style:'display:flex;gap:8px'},[
+        el('button',{class:'btn ghost',type:'button',onclick:()=>{confirmBox.hidden=true;}},['Keep it']),
+        el('button',{class:'btn danger',type:'button',onclick:async()=>{
+          try { await col.doc(id).delete(); closeSheet(); flash('Deleted.'); }
+          catch(e){ err.textContent = 'Could not delete right now. Try again in a moment.'; }
+        }},['Delete'])]));
+  }
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const fd = new FormData(form); const body = {};
+    for (const [k,v] of fd.entries()) body[k] = String(v).trim().slice(0,2000);
+    if (!body.name) { err.textContent = 'Add the insurance name before saving.'; $('f-name').focus(); return; }
+    body.updatedAt = new Date().toISOString();
+    saveBtn.disabled = true; saveBtn.textContent = 'Saving…';
+    try {
+      const ref = id ? col.doc(id) : col.doc();
+      await ref.set(body);
+      flash('Saved.'); openDetailWhenReady(ref.id);
+    } catch (e2) {
+      saveBtn.disabled = false; saveBtn.textContent = 'Save';
+      err.textContent = e2 && e2.code === 'quota_exceeded' ? 'The list is full. Delete old entries to add more.' : 'Could not save right now. Check your connection and try again.';
+    }
+  });
+  form.append(el('div',{class:'field wide'},[err, confirmBox, actions]));
+  sheet.append(
+    el('button',{class:'close',type:'button','aria-label':'Close',onclick:closeSheet},['×']),
+    el('h2',{id:'sheetTitle',text: id ? 'Edit insurance' : 'Add insurance'}), form);
+  openSheet(); $('f-name').focus();
+}
+function openDetailWhenReady(id, tries=0){
+  if (items.find(x=>x.id===id)) openDetail(id);
+  else if (tries < 20) setTimeout(()=>openDetailWhenReady(id,tries+1),100); else closeSheet();
+}
+let flashT; function flash(msg){ $('statusLine').textContent = msg; clearTimeout(flashT); flashT=setTimeout(()=>{$('statusLine').textContent='';},2500); }
+
+$('q').addEventListener('input', e => { query = e.target.value; render(); });
+$('addBtn').addEventListener('click', () => openEdit(null));
+renderChips(); render();
+
+(async () => {
+  db = await (window.claude?.use?.('db') ?? Promise.resolve(null));
+  if (!db) { $('statusLine').textContent = 'The shared list isn’t available in this view.'; $('addBtn').hidden = true; return; }
+  col = db.collection('insurances');
+  const start = () => col.onSnapshot(snap => {
+    items = snap.docs.map(s => ({id:s.id, ...s.data()}));
+    if (!snap.metadata.fromCache) $('statusLine').textContent = '';
+    render();
+  }, e => {
+    $('statusLine').textContent = 'Lost connection to the shared list. Reload the page to reconnect.';
+  });
+  start();
+})();
+})();
+</script>
+
+</body></html>
